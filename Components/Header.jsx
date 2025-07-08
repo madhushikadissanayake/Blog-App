@@ -1,12 +1,20 @@
 import { assets } from '@/Assets/assets'
 import axios from 'axios';
 import Image from 'next/image'
-import React, { useState } from 'react'
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 
 const Header = () => {
 
 const [email,setEmail] = useState("");
+const [isLoggedIn, setIsLoggedIn] = useState(false)
+const router = useRouter();
+
+useEffect(() => {
+  const loggedIn = localStorage.getItem('isLoggedIn')
+  setIsLoggedIn(loggedIn === 'true')
+}, [])
 
 const onSubmitHandler = async (e) =>{
   e.preventDefault();
@@ -22,11 +30,48 @@ const onSubmitHandler = async (e) =>{
   }
 }
 
+const handleLoginClick = () => {
+  router.push('/login');
+}
+
+const handleLogoutClick = () => {
+  localStorage.removeItem('isLoggedIn')
+  setIsLoggedIn(false)
+  toast.success('Logout Successfully!')
+  router.push('/')
+}
+
+const handleGetStartedClick = () => {
+    router.push('/signup')
+}
+
   return (
     <div className='py-5 px-5 md:px-12 lg:px-28'>
       <div className='flex justify-between items-center'>
         <Image src={assets.logo} width={180} alt='' className='w-[130px] sm:w-auto' />
-        <button className='flex items-center gap-2 font-medium py-1 px-3 sm:py-3 sm:px-6 border border-solid border-black shadow-[-7px_7px_0px_#000000]'>Get Started<Image src={assets.arrow} alt=''/></button>
+        
+        <div className='flex gap-4'>
+        <button 
+          onClick={handleGetStartedClick}
+          className='flex items-center gap-2 font-medium py-1 px-3 sm:py-3 sm:px-6 border border-solid border-black shadow-[-7px_7px_0px_#000000]'>
+          Get Started
+          <Image src={assets.arrow} alt=''/>
+          </button>
+      
+       {isLoggedIn ? (
+            <button
+              onClick={handleLogoutClick}
+              className='flex items-center gap-2 font-medium py-1 px-3 sm:py-3 sm:px-6 border border-solid border-black shadow-[-7px_7px_0px_#000000]'>
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={handleLoginClick}
+              className='flex items-center gap-2 font-medium py-1 px-3 sm:py-3 sm:px-6 border border-solid border-black shadow-[-7px_7px_0px_#000000]'>
+              Login
+            </button>
+          )}
+        </div>
       </div>
       <div className='text-center my-8'>
         <h1 className='text-3xl sm:text-5xl font-medium'>Latest Blogs</h1>
